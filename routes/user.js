@@ -2,7 +2,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 const { validateFields } = require('../middlewares/validate-fields');
-const { isValidRole } = require('../helpers/db-validators');
+const { isValidRole, emailExists } = require('../helpers/db-validators');
 
 const {
   usersGet,
@@ -27,6 +27,7 @@ router.post(
       'password is required and more than 6 characters'
     ).isLength({ min: 6 }),
     check('email', 'The email is not valid').isEmail(),
+    check('email').custom(emailExists),
     check('role').custom(isValidRole),
     validateFields,
   ],
