@@ -2,13 +2,18 @@ const { response } = require('express');
 const bcryptjs = require('bcryptjs');
 const User = require('../models/user');
 
-const usersGet = (req, res = response) => {
-  const { name = 'no name', page = 1, limit } = req.query;
+const usersGet = async (req, res = response) => {
+  const { limit = 5, since = 0 } = req.query;
+  const query = { status: true };
+
+  const [total, users] = await Promise.all([
+    User.countDocuments(query),
+    User.find(query).skip(Number(since)).limit(Number(limit)),
+  ]);
+
   res.json({
-    msg: 'get API - usersGet',
-    name,
-    page,
-    limit,
+    total,
+    users,
   });
 };
 
@@ -39,10 +44,7 @@ const usersPut = async (req, res = response) => {
 
   const user = await User.findByIdAndUpdate(id, rest);
 
-  res.json({
-    msg: 'put API - usersPut',
-    user,
-  });
+  res.json(user);
 };
 
 const usersPatch = (req, res = response) => {
