@@ -53,10 +53,10 @@ const usersPatch = (req, res = response) => {
   });
 };
 
-const usersDelete = (req, res = response) => {
-  res.json({
-    msg: 'delete API - usersDelete',
-  });
+const usersDelete = async (req, res = response) => {
+  const { id } = req.params;
+  const user = await User.findByIdAndUpdate(id, { status: false });
+  res.json(user);
 };
 
 module.exports = {
