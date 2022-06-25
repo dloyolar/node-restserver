@@ -58,7 +58,9 @@ const googleSignIn = async (req, res = response) => {
 
     res.json({ user, token });
   } catch {
-    res.status(400).json({ ok: false, msg: 'token could not be verified' });
+    res
+      .status(400)
+      .json({ ok: false, msg: 'google token could not be verified' });
   }
 };
 
