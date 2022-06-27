@@ -1,23 +1,36 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 
-const { validateJWT, validateFields } = require('../middlewares');
+const { validateJWT, validateFields, isAdminRole } = require('../middlewares');
 
-const { createCategory } = require('../controllers/categories');
+const {
+  createCategory,
+  getCategories,
+  getCategory,
+  updateCategory,
+  deleteCategory,
+} = require('../controllers/categories');
+
+const {
+  categoryExists,
+  categoryNameExists,
+  categoryDisabled,
+} = require('../helpers/db-validators');
 
 const router = Router();
 
-// GET ALL CATEGORIES - PUBLIC
-router.get('/', (req, res) => {
-  res.json('get');
-});
+router.get('/', getCategories);
 
-// GET ONE CATEGORY BY ID - PUBLIC
-router.get('/:ID', (req, res) => {
-  res.json('get - ID');
-});
+router.get(
+  '/:id',
+  [
+    check('id', 'ID not valid').isMongoId(),
+    check('id').custom(categoryExists),
+    validateFields,
+  ],
+  getCategory
+);
 
-// CREATE CATEGORY - PRIVATE FOR ANY WITH VALID TOKEN
 router.post(
   '/',
   [
@@ -28,14 +41,30 @@ router.post(
   createCategory
 );
 
-// UPDATE CATEGORY - PRIVATE - FOR ANY WITH VALID TOKEN
-router.put('/:id', (req, res) => {
-  res.json('put');
-});
+router.put(
+  '/:id',
+  [
+    validateJWT,
+    check('id', 'ID not valid').isMongoId(),
+    check('id').custom(categoryExists),
+    check('id').custom(categoryDisabled),
+    check('name', 'name is required').not().isEmpty(),
+    check('name').custom(categoryNameExists),
+    validateFields,
+  ],
+  updateCategory
+);
 
-// DELETE CATEGORY - PRIVATE - ONLY ADMIN
-router.delete('/:id', (req, res) => {
-  res.json('delete');
-});
+router.delete(
+  '/:id',
+  [
+    validateJWT,
+    isAdminRole,
+    check('id', 'ID not valid').isMongoId(),
+    check('id').custom(categoryExists),
+    validateFields,
+  ],
+  deleteCategory
+);
 
 module.exports = router;
