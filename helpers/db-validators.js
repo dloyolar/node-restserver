@@ -1,5 +1,5 @@
 const { isValidObjectId } = require('mongoose');
-const { Category, Role, User } = require('../models');
+const { Category, Role, User, Product } = require('../models');
 
 const isValidRole = async (role = '') => {
   const existsRole = await Role.findOne({ role });
@@ -35,6 +35,24 @@ const categoryDisabled = async (id) => {
   }
 };
 
+const productExists = async (id) => {
+  const product = await Product.findById(id);
+  if (!product) throw new Error(`product ${id} is not register in DB`);
+};
+
+const productNameExists = async (name) => {
+  const nameDB = name.toUpperCase();
+  const product = await Product.findOne({ name: nameDB });
+  if (product) throw new Error(`product ${name} is already exists`);
+};
+
+const productDisabled = async (id) => {
+  const product = await Product.findById(id);
+  if (!product.status) {
+    throw new Error(`product ${id} is deleted or disabled`);
+  }
+};
+
 module.exports = {
   isValidRole,
   emailExists,
@@ -42,4 +60,7 @@ module.exports = {
   categoryExists,
   categoryNameExists,
   categoryDisabled,
+  productExists,
+  productNameExists,
+  productDisabled,
 };
