@@ -7,8 +7,12 @@ const loadFile = async (req, res = response) => {
     return;
   }
 
-  const name = await uploadFile(req.files);
-  res.json({ name });
+  try {
+    const name = await uploadFile(req.files, undefined, 'imgs');
+    res.json({ name });
+  } catch (msg) {
+    res.status(400).json({ msg });
+  }
 };
 
 module.exports = {
