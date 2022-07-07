@@ -54,7 +54,43 @@ const updateImg = async (req, res = response) => {
   res.json(model);
 };
 
+const showImage = async (req, res = response) => {
+  const { id, collection } = req.params;
+
+  let model;
+
+  switch (collection) {
+    case 'users':
+      model = await User.findById(id);
+      if (!model) {
+        res.status(400).json({ msg: `Doesnt exists an User with ID ${id}` });
+      }
+      break;
+    case 'products':
+      model = await Product.findById(id);
+      if (!model) {
+        res.status(400).json({ msg: `Doesnt exists a product with ID ${id}` });
+      }
+      break;
+
+    default:
+      return res.status(500).json({ msg: 'Oops something went wrong' });
+  }
+
+  // clean previous imgs
+  if (model.img) {
+    const pathImage = path.join(__dirname, '../uploads', collection, model.img);
+    if (fs.existsSync(pathImage)) {
+      return res.sendFile(pathImage);
+    }
+  }
+
+  const pathImage = path.join(__dirname, '../assets/no-image.jpg');
+  res.sendFile(pathImage);
+};
+
 module.exports = {
   loadFile,
   updateImg,
+  showImage,
 };
