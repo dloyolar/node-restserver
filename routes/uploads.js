@@ -3,7 +3,13 @@ const { check } = require('express-validator');
 
 const { validateFields, validateFile } = require('../middlewares');
 
-const { loadFile, updateImg, showImage } = require('../controllers/uploads');
+const {
+  loadFile,
+  updateImg,
+  showImage,
+  updateImgCloud,
+} = require('../controllers/uploads');
+
 const { allowedCollections } = require('../helpers');
 
 const router = Router();
@@ -20,7 +26,7 @@ router.put(
     ),
     validateFields,
   ],
-  updateImg
+  updateImgCloud
 );
 
 router.get(
