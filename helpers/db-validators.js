@@ -53,6 +53,14 @@ const productDisabled = async (id) => {
   }
 };
 
+const allowedCollections = (collection = '', collections = []) => {
+  const include = collections.includes(collection);
+  if (!include) {
+    throw new Error(`${collection} not allowed, ${collections}`);
+  }
+  return true;
+};
+
 module.exports = {
   isValidRole,
   emailExists,
@@ -63,4 +71,5 @@ module.exports = {
   productExists,
   productNameExists,
   productDisabled,
+  allowedCollections,
 };
