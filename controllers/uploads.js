@@ -1,7 +1,9 @@
+const path = require('path');
 const { response } = require('express');
 const { uploadFile } = require('../helpers');
 
 const { User, Product } = require('../models');
+const fs = require('fs');
 
 const loadFile = async (req, res = response) => {
   try {
@@ -33,6 +35,14 @@ const updateImg = async (req, res = response) => {
 
     default:
       return res.status(500).json({ msg: 'Oops something went wrong' });
+  }
+
+  // clean previous imgs
+  if (model.img) {
+    const pathImage = path.join(__dirname, '../uploads', collection, model.img);
+    if (fs.existsSync(pathImage)) {
+      fs.unlinkSync(pathImage);
+    }
   }
 
   const name = await uploadFile(req.files, undefined, collection);

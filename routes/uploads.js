@@ -15,7 +15,6 @@ router.put(
   [
     validateFile,
     check('id', 'Should be a Mongo ID').isMongoId(),
-    check('file', 'file is required').not().isEmpty(),
     check('collection').custom((c) =>
       allowedCollections(c, ['users', 'products'])
     ),
